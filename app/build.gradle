@@ -58,7 +58,7 @@ android {
             resValue "string", "file_provider", "com.aetomae.photobook.stg.provider"
         }
 
-        aetomea {
+        product {
             applicationId "com.beetech.hsba"
             resValue "string", "app_name", "HSBA"
             resValue "string", "file_provider", "com.aetomae.photobook.provider"
