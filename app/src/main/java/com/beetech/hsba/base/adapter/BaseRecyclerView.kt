@@ -12,15 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.beetech.hsba.R
 import com.beetech.hsba.base.adapter.EndlessLoadingRecyclerViewAdapter.OnLoadingMoreListener
+import com.beetech.hsba.databinding.LayoutBaseRecyclerviewBinding
 import com.beetech.hsba.extension.ProjectColors
 import com.beetech.hsba.extension.color
-import kotlinx.android.synthetic.main.layout_base_recyclerview.view.*
 
 class BaseRecyclerView : RelativeLayout {
     private var mAdapter: EndlessLoadingRecyclerViewAdapter? = null
-    init {
-        LayoutInflater.from(context).inflate(R.layout.layout_base_recyclerview, this, true)
-    }
+    private val binding: LayoutBaseRecyclerviewBinding = LayoutBaseRecyclerviewBinding.inflate(LayoutInflater.from(context), this, false)
 
     constructor(context: Context) : super(context) {
     }
@@ -46,9 +44,9 @@ class BaseRecyclerView : RelativeLayout {
         val padding = a.getDimension(R.styleable.BaseRecyclerView_brv_padding, 0f)
         val textNoResult =
             a.getString(R.styleable.BaseRecyclerView_brv_text_no_result)
-        tv_no_result.text = textNoResult
+        binding.tvNoResult.text = textNoResult
         if (padding != 0f) {
-            rcv_data.setPadding(padding.toInt(), padding.toInt(), padding.toInt(), padding.toInt())
+            binding.rcvData.setPadding(padding.toInt(), padding.toInt(), padding.toInt(), padding.toInt())
         } else {
             val paddingStart =
                 a.getDimension(R.styleable.BaseRecyclerView_brv_padding_start, 0f)
@@ -58,7 +56,7 @@ class BaseRecyclerView : RelativeLayout {
                 a.getDimension(R.styleable.BaseRecyclerView_brv_padding_top, 0f)
             val paddingBottom =
                 a.getDimension(R.styleable.BaseRecyclerView_brv_padding_bottom, 0f)
-            rcv_data.setPadding(
+            binding.rcvData.setPadding(
                 paddingStart.toInt(),
                 paddingTop.toInt(),
                 paddingEnd.toInt(),
@@ -67,12 +65,12 @@ class BaseRecyclerView : RelativeLayout {
         }
         val enableRefresh =
             a.getBoolean(R.styleable.BaseRecyclerView_brv_enable_refresh, true)
-        swipeRefresh.isEnabled = enableRefresh
-        swipeRefresh.setColorSchemeColors(context.color(ProjectColors.colorPrimary),context.color(R.color.colorPrimaryDark))
+        binding.swipeRefresh.isEnabled = enableRefresh
+        binding.swipeRefresh.setColorSchemeColors(context.color(ProjectColors.colorPrimary),context.color(R.color.colorPrimaryDark))
     }
 
     fun setEnableRefresh(enableRefresh: Boolean) {
-        swipeRefresh.isEnabled = enableRefresh
+        binding.swipeRefresh.isEnabled = enableRefresh
     }
 
     fun enableLoadMore(enableLoadMore: Boolean) {
@@ -80,14 +78,14 @@ class BaseRecyclerView : RelativeLayout {
     }
 
     fun enableRefresh(enableRefresh: Boolean) {
-        swipeRefresh.isRefreshing = enableRefresh
+        binding.swipeRefresh.isRefreshing = enableRefresh
     }
 
 
     fun setListLayoutManager(orientation: Int) {
         val layoutManager: RecyclerView.LayoutManager =
             LinearLayoutManager(context, orientation, false)
-        rcv_data.layoutManager = layoutManager
+        binding.rcvData.layoutManager = layoutManager
     }
 
     fun setGridLayoutManager(spanCount: Int) {
@@ -99,17 +97,17 @@ class BaseRecyclerView : RelativeLayout {
                 } else 1
             }
         }
-        rcv_data.layoutManager = layoutManager
+        binding.rcvData.layoutManager = layoutManager
     }
 
     fun refresh(data: List<Any>) {
         if (data.isNullOrEmpty()) {
-            layout_no_result.visibility = View.VISIBLE
+            binding.layoutNoResult.visibility = View.VISIBLE
         } else {
-            layout_no_result.visibility = View.GONE
+            binding.layoutNoResult.visibility = View.GONE
             mAdapter?.refresh(data)
         }
-        swipeRefresh.isRefreshing = false
+        binding.swipeRefresh.isRefreshing = false
     }
 
     fun addItem(data: List<Any>) {
@@ -119,7 +117,7 @@ class BaseRecyclerView : RelativeLayout {
 
     fun setOnRefreshListener(refreshListener: OnRefreshListener?) {
         mAdapter?.clear()
-        swipeRefresh.setOnRefreshListener(refreshListener)
+        binding.swipeRefresh.setOnRefreshListener(refreshListener)
     }
 
     fun setOnLoadingMoreListener(loadingMoreListener: OnLoadingMoreListener) {
@@ -132,6 +130,6 @@ class BaseRecyclerView : RelativeLayout {
 
     fun setAdapter(adapter: EndlessLoadingRecyclerViewAdapter?) {
         mAdapter = adapter
-        rcv_data.adapter = adapter
+        binding.rcvData.adapter = adapter
     }
 }

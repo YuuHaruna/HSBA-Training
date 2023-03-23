@@ -3,8 +3,11 @@ package com.beetech.hsba.di.module
 import android.content.Context
 import com.beetech.hsba.BuildConfig
 import com.beetech.hsba.network.ApiInterface
+import com.beetech.hsba.network.HeaderDeviceInterceptor
+import com.beetech.hsba.network.HeaderVersionInterceptor
 import com.beetech.hsba.network.NetworkCheckerInterceptor
 import com.beetech.hsba.utils.Define
+import com.google.gson.Gson
 
 import com.google.gson.GsonBuilder
 
@@ -29,8 +32,8 @@ class NetworkModule {
     @Provides
     @Singleton
     fun provideApiInterface(client: OkHttpClient): ApiInterface {
-        val gson = GsonBuilder()
-            .setLenient()
+        val gson = Gson().newBuilder()
+            .serializeNulls()
             .create()
 
         val retrofit = Retrofit.Builder()
@@ -53,8 +56,10 @@ class NetworkModule {
         val networkCheckerInterceptor = NetworkCheckerInterceptor(context)
 
         return OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
 //            .addInterceptor(tokenInterceptor)
+            .addInterceptor(HeaderDeviceInterceptor())
+            .addInterceptor(HeaderVersionInterceptor())
+            .addInterceptor(loggingInterceptor)
             .addInterceptor(networkCheckerInterceptor)
             .connectTimeout(Define.DEFAULT_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(Define.DEFAULT_TIMEOUT, TimeUnit.SECONDS)

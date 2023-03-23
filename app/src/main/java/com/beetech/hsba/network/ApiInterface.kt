@@ -18,7 +18,6 @@ interface ApiInterface {
         @Query("page") page: Int
     ): Single<BaseListLoadMoreResponse<User>>
 
-    @POST("/api/auth/login/customer")
-    @Headers("Content-Type: application/json")
+    @POST("user/login/")
     fun login(@Body loginRequest:LoginRequest) : Single<BaseObjectResponse<LoginResponse>>
 }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <import type="android.graphics.drawable.Drawable"/>
+        <variable
+            name="platformLogo"
+            type="Drawable" />
+
+        <variable
+            name="platformName"
+            type="String" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/parentView_itemSSo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/paddingHorizontal_itemSSO_parentView"
+        android:paddingVertical="@dimen/paddingVertical_itemSSO_parentView"
+        android:background="@drawable/shape_background_login_sso_item"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="@dimen/marginBottom_itemSSO_parentView">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imageView_ssoItem_platformLogo"
+            android:layout_width="@dimen/size_itemSSO_platformLogo"
+            android:layout_height="@dimen/size_itemSSO_platformLogo"
+            android:src="@{platformLogo}"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textView_ssoItem_platformName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{@string/login_registerTextButton(platformName)}"
+            android:textSize="@dimen/textSize_itemSSO_platformName"
+            android:textColor="@color/black"
+            android:layout_marginStart="@dimen/marginStart_itemSSO_platformName"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

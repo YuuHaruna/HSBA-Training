@@ -1,6 +1,16 @@
 <resources>
-    <string name="error_place_holder">Error Happend.Try again!</string>
+    <string name="error_place_holder">Error Happened.Try again!</string>
     <string name="timeout_error">Quá thời gian kết nối máy chủ</string>
     <integer name="activity_anim_duration">300</integer>
     <integer name="activity_anim_duration_out">500</integer>
+
+    <string name="all_login">Đăng nhập</string>
+    <string name="all_register">Đăng ký</string>
+
+    <string name="login_registerTextButton">Đăng nhập với %s</string>
+    <string name="login_usernameHint">Email/Username</string>
+    <string name="login_passwordHint">Password</string>
+    <string name="login_forgotPassword">Quên mật khẩu</string>
+    <string name="login_ssoTitle">Hoặc đăng nhập qua:</string>
+    <string name="login_registerButton"><u>Đăng ký tài khoản</u></string>
 </resources>

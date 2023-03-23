@@ -59,5 +59,42 @@
     <dimen name="circle_stroke_width">2dp</dimen>
     <dimen name="normal_text_size">14dp</dimen>
 
+    <dimen name="textSize_login_editText">16sp</dimen>
+    <dimen name="textSize_login_loginButton">16sp</dimen>
+    <dimen name="textSize_login_ssoTitle">16sp</dimen>
+    <dimen name="textSize_itemSSO_platformName">16sp</dimen>
+
+    <dimen name="size_itemSSO_platformLogo">35dp</dimen>
+    <dimen name="height_login_loginEdittext">45dp</dimen>
+    <dimen name="width_login_drawableStartEdittext">46dp</dimen>
+    <dimen name="height_login_drawableStartEdittext">46dp</dimen>
+    <dimen name="width_login_loginButton">211dp</dimen>
+    <dimen name="height_login_loginButton">45dp</dimen>
+
+    <dimen name="marginBottom_itemSSO_parentView">12dp</dimen>
+    <dimen name="marginStart_itemSSO_platformName">15.5dp</dimen>
+    <dimen name="marginTop_login_loginLogo">85dp</dimen>
+    <dimen name="marginTop_login_usernameInput">36dp</dimen>
+    <dimen name="marginStart_login_drawableStartEdittext">1dp</dimen>
+    <dimen name="marginEnd_login_drawableEndEdittext">14dp</dimen>
+    <dimen name="marginTop_login_registerButton">15dp</dimen>
+    <dimen name="marginTop_login_loginButton">29.5dp</dimen>
+    <dimen name="marginTop_login_ssoTitle">39.5dp</dimen>
+    <dimen name="marginTop_login_ssoList">15.5dp</dimen>
+
+    <dimen name="paddingHorizontal_itemSSO_parentView">18dp</dimen>
+    <dimen name="paddingVertical_itemSSO_parentView">5dp</dimen>
+    <dimen name="paddingHorizontal_login_parentView">30dp</dimen>
+    <dimen name="paddingStart_login_loginEdittext">57dp</dimen>
+    <dimen name="paddingEnd_login_loginEdittext">44dp</dimen>
+    <dimen name="paddingHorizontal_login_usernameIcon">13dp</dimen>
+    <dimen name="paddingVertical_login_passwordIcon">12.5dp</dimen>
+
+    <dimen name="strokeWidth_login_edittext">0.5dp</dimen>
+
+    <dimen name="radius_all_authButton">22.5dp</dimen>
+    <dimen name="radius_login_edittext">22.5dp</dimen>
+    <dimen name="radius_login_drawableStartEdittext">23dp</dimen>
+    <dimen name="radius_itemSSO">8dp</dimen>
 
 </resources>

@@ -59,7 +59,12 @@ abstract class BaseActivity : AppCompatActivity() {
                 throwable.response()?.errorBody()?.let {
                     errorBody = it.string()
                     val gson = GsonBuilder().create()
-                    requestError = gson.fromJson(errorBody, RequestError::class.java)
+                    gson.fromJson(errorBody, RequestError::class.java)?.let { convertedRequestError ->
+                        requestError = convertedRequestError
+                    } ?: run {
+                        requestError.errorCode = (Define.Api.UNKNOWN)
+                        requestError.errorMessage = (getString(R.string.error_place_holder))
+                    }
                 } ?: run {
                     requestError.errorCode = (Define.Api.TIME_OUT)
                     requestError.errorMessage = (getString(R.string.error_place_holder))

@@ -2,9 +2,13 @@ package com.beetech.hsba.entity
 
 import com.google.gson.annotations.SerializedName
 
-class LoginRequest {
-    @SerializedName("username")
-    var username:String? = null
+data class LoginRequest(
+    @SerializedName("device")
+    val device: Int,
+    @SerializedName("device_token")
+    val deviceToken: String,
     @SerializedName("password")
-    var password:String? = null
-}
+    val password: String,
+    @SerializedName("username")
+    val username: String
+)
