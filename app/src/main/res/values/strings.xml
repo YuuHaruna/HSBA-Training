@@ -1,4 +1,9 @@
 <resources>
+    <!--    Facebook Login-->
+    <string name="facebook_app_id">1427832381086515</string>
+    <string name="fb_login_protocol_scheme">fb1427832381086515</string>
+    <string name="facebook_client_token">8beb2d72d05a566d89d531596a00fa18</string>
+
     <string name="error_place_holder">Error Happened.Try again!</string>
     <string name="timeout_error">Quá thời gian kết nối máy chủ</string>
     <integer name="activity_anim_duration">300</integer>
