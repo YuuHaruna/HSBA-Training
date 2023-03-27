@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="message"
+            type="String" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imageView_itemMessageReceive_avatar"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/avatar"
+            app:shapeAppearanceOverlay="@style/RoundedImageViewAvatar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_itemMessageReceive"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintGuide_percent="0.75"
+            android:orientation="vertical"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textView_itemMessageReceive_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{message}"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            tools:text="Dạ, E cảm ơn bác sĩ!Dạ, E cảm ơn bác sĩ!Dạ, E cảm ơn bác sĩ!Dạ, E cảm ơn bác sĩ!"
+            android:paddingVertical="11dp"
+            android:paddingHorizontal="12dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/shape_background_chat_their_message"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@id/imageView_itemMessageReceive_avatar"
+            app:layout_constraintEnd_toEndOf="@id/guideline_itemMessageReceive"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

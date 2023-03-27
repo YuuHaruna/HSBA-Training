@@ -6,6 +6,7 @@ import com.beetech.hsba.R
 import com.beetech.hsba.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.fragment.app.viewModels
+import com.beetech.hsba.ui.chat.ChatFragment
 import com.beetech.hsba.ui.home.HomeFragment
 
 @AndroidEntryPoint
@@ -32,7 +33,8 @@ class SplashFragment : BaseFragment() {
     override fun initListener() {
         Looper.getMainLooper()?.let {
             Handler(it).postDelayed({
-                getVC().replaceFragment(HomeFragment::class.java)
+//                getVC().replaceFragment(HomeFragment::class.java)
+                getVC().replaceFragment(ChatFragment::class.java)
             },1500)
         }
 
