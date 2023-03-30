@@ -5,13 +5,10 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.beetech.hsba.entity.BaseMessage
 import com.beetech.hsba.entity.Message
 import com.beetech.hsba.entity.MessageType
 import com.beetech.hsba.entity.VoiceMessage
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class ChatViewModel : ViewModel() {
 

@@ -3,20 +3,23 @@ package com.beetech.hsba.ui.chat
 import android.Manifest
 import android.animation.ValueAnimator
 import android.content.pm.PackageManager
+import android.icu.text.SimpleDateFormat
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.os.postDelayed
 import androidx.core.view.*
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.beetech.hsba.R
 import com.beetech.hsba.base.BaseFragment
@@ -25,9 +28,8 @@ import com.beetech.hsba.extension.hideKeyboard
 import com.beetech.hsba.extension.statusBarHeight
 import com.beetech.hsba.extension.toast
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.IOException
+import java.util.*
 
 @AndroidEntryPoint
 class ChatFragment : BaseFragment() {
@@ -36,11 +38,35 @@ class ChatFragment : BaseFragment() {
     }
 
     override fun initView() {
+        binding.chatParentView.setOnClickListener { it.hideKeyboard() }
 
+        val tv = TypedValue()
+        val actionBarHeight =
+            if (requireContext().theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics)
+            } else 0
+        binding.toolBarChatFragment.layoutParams.height = requireContext().statusBarHeight() + actionBarHeight
+//        bottomSheetGalleryBehavior = BottomSheetBehavior.from(binding.bottomSheetGalleryImage.parentViewBottomSheetGalleryImage)
+
+//        binding.recyclerViewChat.apply {
+//            setPadding(this.paddingLeft, headerHeight, this.paddingRight, this.paddingBottom)
+//        }
+//        setupBottomSheetGallery(headerHeight)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.chatParentView) { v, insets ->
+            val animator = ValueAnimator.ofInt(0, insets.getInsets(WindowInsetsCompat.Type.ime()).bottom)
+            animator.addUpdateListener {
+                    valueAnimator -> v.setPadding(0, 0, 0, valueAnimator.animatedValue as? Int ?: 0)
+            }
+            animator.duration = 50
+            animator.start()
+            insets
+        }
+        binding.textViewChatVoiceChatTime.stop()
     }
 
     override fun initData() {
-
+        binding.viewModel = viewModel
     }
 
     override fun initListener() {
@@ -110,45 +136,8 @@ class ChatFragment : BaseFragment() {
         return binding.root
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        WindowCompat.setDecorFitsSystemWindows(requireActivity().window, false)
-//        WindowInsetsControllerCompat(requireActivity().window, binding.root).let {
-//            it.hide(WindowInsetsCompat.Type.systemBars())
-//            it.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-//        }
-//    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.viewModel = viewModel
-
-        binding.chatParentView.setOnClickListener { it.hideKeyboard() }
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.chatParentView) { v, insets ->
-            val animator = ValueAnimator.ofInt(0, insets.getInsets(WindowInsetsCompat.Type.ime()).bottom)
-            animator.addUpdateListener {
-                    valueAnimator -> v.setPadding(0, 0, 0, valueAnimator.animatedValue as? Int ?: 0)
-            }
-            animator.duration = 50
-            animator.start()
-            insets
-        }
-
-//        bottomSheetGalleryBehavior = BottomSheetBehavior.from(binding.bottomSheetGalleryImage.parentViewBottomSheetGalleryImage)
-
-//        val tv = TypedValue()
-//        val actionBarHeight =
-//            if (requireContext().theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-//                TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics)
-//            } else 0
-//        val headerHeight = actionBarHeight + requireContext().statusBarHeight()
-//        binding.toolBarChatFragment.layoutParams.height = headerHeight
-//        binding.recyclerViewChat.apply {
-//            setPadding(this.paddingLeft, headerHeight, this.paddingRight, this.paddingBottom)
-//        }
-//        setupBottomSheetGallery(headerHeight)
 
         viewModel.listMessage.observe(viewLifecycleOwner) {listMsg ->
             Looper.getMainLooper()?.let {
@@ -185,8 +174,36 @@ class ChatFragment : BaseFragment() {
 //            checkPermission { showBottomSheetGallery() }
 //        }
 
+        var fileVoice = ""
         binding.imageButtonChatVoiceChat.setOnClickListener {
-            checkPermission { toast("VoiceChat") }
+            checkPermission {
+                fileVoice = "${requireContext().externalCacheDir?.absolutePath}/recording_" + Calendar.getInstance().timeInMillis + ".m4a"
+                startVoiceChat(fileVoice)
+                binding.groupChatVoiceChatBox.visibility = View.VISIBLE
+                binding.viewChatChatBox.visibility = View.GONE
+                binding.textViewChatVoiceChatTime.start()
+            }
+        }
+
+        binding.imageButtonChatCancelVoiceChat.setOnClickListener {
+            binding.textViewChatVoiceChatTime.stop()
+            stopVoiceChat()
+            binding.groupChatVoiceChatBox.visibility = View.GONE
+            binding.viewChatChatBox.visibility = View.VISIBLE
+        }
+
+        binding.imageButtonChatResetVoiceChat.setOnClickListener {
+            binding.textViewChatVoiceChatTime.stop()
+            binding.textViewChatVoiceChatTime.base = SystemClock.elapsedRealtime()
+            resetVoiceChat(fileVoice)
+            binding.textViewChatVoiceChatTime.start()
+        }
+
+        binding.imageButtonChatSendVoiceChat.setOnClickListener {
+            sendVoiceChat(fileVoice)
+            binding.groupChatVoiceChatBox.visibility = View.GONE
+            binding.viewChatChatBox.visibility = View.VISIBLE
+            binding.textViewChatVoiceChatTime.stop()
         }
 
 //        viewModel.selectedGalleryImage.observe(viewLifecycleOwner) {
@@ -371,15 +388,17 @@ class ChatFragment : BaseFragment() {
     private fun stopVoiceChat(){
         mediaRecorder?.apply {
             stop()
+            reset()
             release()
         }
         mediaRecorder = null
     }
 
-    private fun resetVoiceChat(){
+    private fun resetVoiceChat(file: String){
         mediaRecorder?.apply {
             reset()
         }
+        startVoiceChat(file)
     }
 
     private fun sendVoiceChat(file: String){
