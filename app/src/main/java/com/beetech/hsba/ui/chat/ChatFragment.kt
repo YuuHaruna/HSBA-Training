@@ -4,6 +4,7 @@ import android.Manifest
 import android.animation.ValueAnimator
 import android.content.pm.PackageManager
 import android.icu.text.SimpleDateFormat
+import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Handler
@@ -40,6 +41,8 @@ class ChatFragment : BaseFragment() {
     override fun initView() {
         binding.chatParentView.setOnClickListener { it.hideKeyboard() }
 
+        binding.textViewChatVoiceChatTime.stop()
+
         val tv = TypedValue()
         val actionBarHeight =
             if (requireContext().theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
@@ -62,7 +65,14 @@ class ChatFragment : BaseFragment() {
             animator.start()
             insets
         }
-        binding.textViewChatVoiceChatTime.stop()
+
+        binding.recyclerViewChat.apply {
+            adapter = ChatListAdapter()
+            layoutManager = LinearLayoutManager(requireContext()).apply {
+                stackFromEnd = true
+            }
+            itemAnimator = null
+        }
     }
 
     override fun initData() {
@@ -178,32 +188,32 @@ class ChatFragment : BaseFragment() {
         binding.imageButtonChatVoiceChat.setOnClickListener {
             checkPermission {
                 fileVoice = "${requireContext().externalCacheDir?.absolutePath}/recording_" + Calendar.getInstance().timeInMillis + ".m4a"
-                startVoiceChat(fileVoice)
                 binding.groupChatVoiceChatBox.visibility = View.VISIBLE
-                binding.viewChatChatBox.visibility = View.GONE
-                binding.textViewChatVoiceChatTime.start()
+                binding.groupChatTextChatBox.visibility = View.GONE
+                startVoiceChat(fileVoice)
             }
         }
 
         binding.imageButtonChatCancelVoiceChat.setOnClickListener {
-            binding.textViewChatVoiceChatTime.stop()
-            stopVoiceChat()
+//            binding.textViewChatVoiceChatTime.base = SystemClock.elapsedRealtime()
             binding.groupChatVoiceChatBox.visibility = View.GONE
-            binding.viewChatChatBox.visibility = View.VISIBLE
+            binding.groupChatTextChatBox.visibility = View.VISIBLE
+            stopVoiceChat()
         }
 
         binding.imageButtonChatResetVoiceChat.setOnClickListener {
-            binding.textViewChatVoiceChatTime.stop()
-            binding.textViewChatVoiceChatTime.base = SystemClock.elapsedRealtime()
             resetVoiceChat(fileVoice)
-            binding.textViewChatVoiceChatTime.start()
+//            binding.textViewChatVoiceChatTime.stop()
+////            binding.textViewChatVoiceChatTime.base = SystemClock.elapsedRealtime()
+//            binding.textViewChatVoiceChatTime.start()
         }
 
         binding.imageButtonChatSendVoiceChat.setOnClickListener {
-            sendVoiceChat(fileVoice)
             binding.groupChatVoiceChatBox.visibility = View.GONE
-            binding.viewChatChatBox.visibility = View.VISIBLE
-            binding.textViewChatVoiceChatTime.stop()
+            binding.groupChatTextChatBox.visibility = View.VISIBLE
+            sendVoiceChat(fileVoice)
+//            binding.textViewChatVoiceChatTime.base = SystemClock.elapsedRealtime()
+//            binding.textViewChatVoiceChatTime.stop()
         }
 
 //        viewModel.selectedGalleryImage.observe(viewLifecycleOwner) {
@@ -220,14 +230,6 @@ class ChatFragment : BaseFragment() {
 //        binding.imageButtonChatCollapseGalleryBottomSheet.setOnClickListener {
 //            hideBottomSheetGallery()
 //        }
-
-        binding.recyclerViewChat.apply {
-            adapter = ChatListAdapter()
-            layoutManager = LinearLayoutManager(requireContext()).apply {
-                stackFromEnd = true
-            }
-            itemAnimator = null
-        }
     }
 
 //    private fun changeTopAppBar() {
@@ -383,21 +385,24 @@ class ChatFragment : BaseFragment() {
             }
             start()
         }
+        binding.textViewChatVoiceChatTime.base = SystemClock.elapsedRealtime()
+        binding.textViewChatVoiceChatTime.start()
     }
 
     private fun stopVoiceChat(){
         mediaRecorder?.apply {
             stop()
-            reset()
             release()
         }
         mediaRecorder = null
+        binding.textViewChatVoiceChatTime.stop()
     }
 
     private fun resetVoiceChat(file: String){
         mediaRecorder?.apply {
             reset()
         }
+        binding.textViewChatVoiceChatTime.stop()
         startVoiceChat(file)
     }
 

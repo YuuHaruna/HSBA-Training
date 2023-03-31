@@ -203,6 +203,7 @@ class ChatListAdapter(val avatarUrl: String = "") :
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
                     if (wasPlaying) {
                         mediaPlayer.seekTo(seekBar?.progress ?: 0)
+                        binding.textViewItemVoiceMessageSendTime.text = SimpleDateFormat("mm:ss").format(seekBar?.max?.minus((seekBar.progress)) ?: 0)
                     }
                 }
             })
