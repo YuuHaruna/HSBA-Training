@@ -21,14 +21,17 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.postDelayed
 import androidx.core.view.*
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.beetech.hsba.R
 import com.beetech.hsba.base.BaseFragment
 import com.beetech.hsba.databinding.FragmentChatBinding
-import com.beetech.hsba.extension.hideKeyboard
-import com.beetech.hsba.extension.statusBarHeight
-import com.beetech.hsba.extension.toast
+import com.beetech.hsba.extension.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.util.*
 
@@ -159,7 +162,7 @@ class ChatFragment : BaseFragment() {
             }
         }
 
-        binding.imageButtonChatSend.setOnClickListener {
+        binding.layoutChatTextChatBox.imageButtonChatSend.setOnClickListener {
             viewModel.sendMsg()
 //            viewModel.selectedGalleryImage.value?.apply {
 //                if (this.isNotEmpty()) {
@@ -185,35 +188,39 @@ class ChatFragment : BaseFragment() {
 //        }
 
         var fileVoice = ""
-        binding.imageButtonChatVoiceChat.setOnClickListener {
+        binding.layoutChatTextChatBox.imageButtonChatVoiceChat.setOnClickListener {
+            it.hideKeyboard()
             checkPermission {
                 fileVoice = "${requireContext().externalCacheDir?.absolutePath}/recording_" + Calendar.getInstance().timeInMillis + ".m4a"
-                binding.groupChatVoiceChatBox.visibility = View.VISIBLE
-                binding.groupChatTextChatBox.visibility = View.GONE
+                binding.groupChatVoiceChatBox.visible()
+                binding.layoutChatTextChatBox.root.invisible()
+                binding.recyclerViewChatWaveAnimation.apply {
+                    adapter = ListWaveVoiceChatAdapter(requireContext())
+                    layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                    itemAnimator = null
+                }
+
+                (binding.recyclerViewChatWaveAnimation.adapter as ListWaveVoiceChatAdapter).apply {
+                    repeat(10){ addModel(10, false) }
+                }
                 startVoiceChat(fileVoice)
             }
         }
 
         binding.imageButtonChatCancelVoiceChat.setOnClickListener {
-//            binding.textViewChatVoiceChatTime.base = SystemClock.elapsedRealtime()
-            binding.groupChatVoiceChatBox.visibility = View.GONE
-            binding.groupChatTextChatBox.visibility = View.VISIBLE
+            binding.groupChatVoiceChatBox.gone()
+            binding.layoutChatTextChatBox.root.visible()
             stopVoiceChat()
         }
 
         binding.imageButtonChatResetVoiceChat.setOnClickListener {
             resetVoiceChat(fileVoice)
-//            binding.textViewChatVoiceChatTime.stop()
-////            binding.textViewChatVoiceChatTime.base = SystemClock.elapsedRealtime()
-//            binding.textViewChatVoiceChatTime.start()
         }
 
         binding.imageButtonChatSendVoiceChat.setOnClickListener {
-            binding.groupChatVoiceChatBox.visibility = View.GONE
-            binding.groupChatTextChatBox.visibility = View.VISIBLE
+            binding.groupChatVoiceChatBox.gone()
+            binding.layoutChatTextChatBox.root.visible()
             sendVoiceChat(fileVoice)
-//            binding.textViewChatVoiceChatTime.base = SystemClock.elapsedRealtime()
-//            binding.textViewChatVoiceChatTime.stop()
         }
 
 //        viewModel.selectedGalleryImage.observe(viewLifecycleOwner) {
@@ -387,6 +394,20 @@ class ChatFragment : BaseFragment() {
         }
         binding.textViewChatVoiceChatTime.base = SystemClock.elapsedRealtime()
         binding.textViewChatVoiceChatTime.start()
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO){
+                while (mediaRecorder != null){
+                    withContext(Dispatchers.Main){
+                        (binding.recyclerViewChatWaveAnimation.adapter as ListWaveVoiceChatAdapter).addModel(
+                            mediaRecorder?.maxAmplitude,
+                            true
+                        )
+                        Log.d("VoiceAni", mediaRecorder?.maxAmplitude.toString())
+                    }
+                    delay(100)
+                }
+            }
+        }
     }
 
     private fun stopVoiceChat(){
