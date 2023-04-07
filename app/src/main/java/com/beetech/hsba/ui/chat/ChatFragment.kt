@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothDevice
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.media.AudioManager
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.*
@@ -46,6 +47,59 @@ import java.util.*
 
 @AndroidEntryPoint
 class ChatFragment : BaseFragment() {
+
+    override val layoutId: Int
+        get() = R.layout.fragment_chat
+
+    private val viewModel: ChatViewModel by viewModels()
+
+    private var _binding: FragmentChatBinding? = null
+
+    private val binding get() = _binding!!
+
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+
+    private var mediaRecorder: MediaRecorder? = null
+
+    private lateinit var openCameraForResult: ActivityResultLauncher<Intent>
+
+    private lateinit var bottomSheetGalleryBehavior: BottomSheetBehavior<ConstraintLayout>
+
+    private val bluetoothReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(
+            context: Context,
+            intent: Intent
+        ) {
+            val audioManager = requireContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
+            when(intent.action){
+                BluetoothDevice.ACTION_ACL_CONNECTED -> {
+                    toast("Đã kết nối vào răng xanh")
+                    audioManager.apply {
+                        isBluetoothScoOn = true
+                        mode = AudioManager.MODE_IN_COMMUNICATION
+                    }
+                }
+                BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
+                    toast("Đã ngắt kết nối tới răng xanh")
+                    audioManager.stopBluetoothSco()
+                }
+            }
+        }
+    }
+
+    private val scoHeadsetAudioStateReceiver:  BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(
+            context: Context,
+            intent: Intent
+        ) {
+            when(intent.getIntExtra(AudioManager.EXTRA_SCO_AUDIO_STATE, -1)){
+                AudioManager.SCO_AUDIO_STATE_CONNECTED -> toast("Răng xanh recording is ready")
+                AudioManager.SCO_AUDIO_STATE_DISCONNECTED -> toast("Răng xanh recording disabled")
+            }
+        }
+    }
+
     override fun backFromAddFragment() {
 
     }
@@ -91,25 +145,17 @@ class ChatFragment : BaseFragment() {
     override fun initData() {
         binding.viewModel = viewModel
 
-        val bluetoothReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(
-                context: Context,
-                intent: Intent
-            ) {
-                val action = intent.action
-                if (BluetoothDevice.ACTION_ACL_CONNECTED == action) {
-                    toast("Đã kết nối vào răng xanh")
-                } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED == action) {
-                    toast("Đã ngắt kết nối tới răng xanh")
-                }
-            }
-        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)}
 
-        val filter = IntentFilter()
-        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
-        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED)
-        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
-        requireContext().registerReceiver(bluetoothReceiver, filter)
+        val bluetoothConnectFilter = IntentFilter()
+        bluetoothConnectFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+        bluetoothConnectFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED)
+        bluetoothConnectFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
+        requireContext().registerReceiver(bluetoothReceiver, bluetoothConnectFilter)
+
+        val scoAudioStateFilter = IntentFilter()
+        scoAudioStateFilter.addAction(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED)
+        requireContext().registerReceiver(scoHeadsetAudioStateReceiver, scoAudioStateFilter)
     }
 
     override fun initListener() {
@@ -120,23 +166,6 @@ class ChatFragment : BaseFragment() {
 
         return true
     }
-
-    override val layoutId: Int
-        get() = R.layout.fragment_chat
-
-    private val viewModel: ChatViewModel by viewModels()
-
-    private var _binding: FragmentChatBinding? = null
-
-    private val binding get() = _binding!!
-
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
-
-    private var mediaRecorder: MediaRecorder? = null
-
-    private lateinit var openCameraForResult: ActivityResultLauncher<Intent>
-
-    private lateinit var bottomSheetGalleryBehavior: BottomSheetBehavior<ConstraintLayout>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -204,11 +233,6 @@ class ChatFragment : BaseFragment() {
             it.hideKeyboard()
         }
 
-//        binding.imageButtonChatNavBack.setOnClickListener {
-//            findNavController().popBackStack()
-//            changeTopAppBar()
-//        }
-
         binding.layoutChatTextChatBox.imageButtonChatTakePhoto.setOnClickListener {
             checkPermission { takePhoto() }
         }
@@ -268,14 +292,6 @@ class ChatFragment : BaseFragment() {
             hideBottomSheetGallery()
         }
     }
-
-//    private fun changeTopAppBar() {
-//        binding.toolBarChatFragment.visibility = View.GONE
-//
-//        activity?.findViewById<AppBarLayout>(R.id.topAppBar_mainActivity)?.visibility = View.VISIBLE
-//
-//        activity?.findViewById<BottomNavigationView>(R.id.bottomNav_activityMain_bottomNav)?.visibility = View.VISIBLE
-//    }
 
     private fun takePhoto() {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -410,9 +426,12 @@ class ChatFragment : BaseFragment() {
     }
 
     private fun startVoiceChat(file: String){
-        mediaRecorder = MediaRecorder()
+        mediaRecorder = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            MediaRecorder(requireContext())
+        } else MediaRecorder()
+        (requireContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager).startBluetoothSco()
         mediaRecorder?.apply {
-            setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
+            setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setOutputFile(file)
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
@@ -428,12 +447,13 @@ class ChatFragment : BaseFragment() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO){
                 while (mediaRecorder != null){
+                    val maxAmplitude = mediaRecorder?.maxAmplitude
+                    Log.d("VoiceAni", maxAmplitude.toString())
                     withContext(Dispatchers.Main){
                         (binding.recyclerViewChatWaveAnimation.adapter as ListWaveVoiceChatAdapter).addModel(
-                            mediaRecorder?.maxAmplitude,
+                            maxAmplitude,
                             true
                         )
-                        Log.d("VoiceAni", mediaRecorder?.maxAmplitude.toString())
                     }
                     delay(100)
                 }
@@ -448,6 +468,7 @@ class ChatFragment : BaseFragment() {
         }
         mediaRecorder = null
         binding.textViewChatVoiceChatTime.stop()
+        (requireContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager).stopBluetoothSco()
     }
 
     private fun resetVoiceChat(file: String){
@@ -499,5 +520,7 @@ class ChatFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        requireContext().unregisterReceiver(bluetoothReceiver)
+        requireContext().unregisterReceiver(scoHeadsetAudioStateReceiver)
     }
 }
