@@ -23,8 +23,8 @@ import com.beetech.hsba.entity.Message
 import com.beetech.hsba.entity.MessageType
 import com.beetech.hsba.entity.VoiceMessage
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -158,21 +158,6 @@ class ChatListAdapter(val avatarUrl: String = "") :
                 }
             }
             binding.imageViewItemVoiceMessageSendPlayPause.setOnClickListener {
-//                if (!mediaPlayer.isPlaying) {
-//                    if (!wasPlaying) {
-//                        if (mediaPlayer.duration <= 0) {
-//                            mediaPlayer.apply {
-//                                setDataSource(binding.root.context, uri)
-//                                isLooping = false
-//                                prepare()
-//                            }
-//                        }
-//                        runVoice(mediaPlayer)
-//                    } else mediaPlayer.apply {
-//                        seekTo(binding.seekBarItemVoiceMessageSendProgress.progress)
-//                        start()
-//                    }
-//                } else mediaPlayer.pause()
                 if (mediaPlayer.duration <= 0) {
                     mediaPlayer.apply {
                         setDataSource(binding.root.context, uri)
@@ -217,40 +202,37 @@ class ChatListAdapter(val avatarUrl: String = "") :
                 runSeeker(mediaPlayer)
                 binding.imageViewItemVoiceMessageSendPlayPause.setImageDrawable(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_pause))
             } catch (e: Exception) {
-                Log.e("VoiceChat", "Error occurred!: $e")
+                Log.e("PlayVoiceChat", "Error occurred!: $e")
                 mediaPlayer.stop()
                 mediaPlayer.release()
             }
         }
 
         private fun runSeeker(mediaPlayer: MediaPlayer) {
-            GlobalScope.launch {
-                withContext(Dispatchers.IO) {
-                    binding.seekBarItemVoiceMessageSendProgress.progress = 0
-                    var currentPosition = if (mediaPlayer.currentPosition >= 0) mediaPlayer.currentPosition else 0
-                    val total = mediaPlayer.duration
-                    while (wasPlaying && mediaPlayer.isPlaying && currentPosition < total) {
-                        currentPosition = mediaPlayer.currentPosition
-                        withContext(Dispatchers.Main){
-                            binding.seekBarItemVoiceMessageSendProgress.progress = currentPosition
-                            binding.textViewItemVoiceMessageSendTime.text =
-                                SimpleDateFormat("mm:ss").format(total - currentPosition)
-                        }
+            CoroutineScope(Dispatchers.IO).launch {
+                binding.seekBarItemVoiceMessageSendProgress.progress = 0
+                var currentPosition = if (mediaPlayer.currentPosition >= 0) mediaPlayer.currentPosition else 0
+                val total = mediaPlayer.duration
+                while (wasPlaying && mediaPlayer.isPlaying && currentPosition <= total) {
+                    currentPosition = mediaPlayer.currentPosition
+                    withContext(Dispatchers.Main) {
+                        binding.seekBarItemVoiceMessageSendProgress.progress = currentPosition
+                        binding.textViewItemVoiceMessageSendTime.text = SimpleDateFormat("mm:ss").format(total - currentPosition)
                     }
+                }
 
-                    withContext(Dispatchers.Main){
-                        binding.imageViewItemVoiceMessageSendPlayPause.setImageDrawable(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_play))
-                    }
+                withContext(Dispatchers.Main) {
+                    binding.imageViewItemVoiceMessageSendPlayPause.setImageDrawable(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_play))
+                }
 
-                    if(currentPosition == total){
-                        withContext(Dispatchers.Main){
-                            binding.seekBarItemVoiceMessageSendProgress.progress = 0
-                            binding.textViewItemVoiceMessageSendTime.text = SimpleDateFormat("mm:ss").format(total)
-                        }
-                        mediaPlayer.stop()
-                        mediaPlayer.reset()
-                        wasPlaying = false
+                if (currentPosition / 100 == total / 100) {
+                    withContext(Dispatchers.Main) {
+                        binding.seekBarItemVoiceMessageSendProgress.progress = 0
+                        binding.textViewItemVoiceMessageSendTime.text = SimpleDateFormat("mm:ss").format(total)
                     }
+                    mediaPlayer.stop()
+                    mediaPlayer.reset()
+                    wasPlaying = false
                 }
             }
         }

@@ -59,7 +59,7 @@ class HomeFragment : BaseFragment() {
                     val acc = GoogleSignIn.getSignedInAccountFromIntent(it.data).getResult(ApiException::class.java)
                     toast("Login with Google success by account ${acc.email} and result code is ${it.resultCode}")
                 } catch (e: ApiException) {
-                    Log.d("Login", "signInResult:failed code=" + e.statusCode)
+                    Log.e("LoginGG", "signInResult:failed code=" + e.statusCode)
                     if (it.resultCode != Activity.RESULT_CANCELED) toast("Login with Google fail: ${e.statusCode} and result code is ${it.resultCode}")
                 }
             }
@@ -160,7 +160,6 @@ class HomeFragment : BaseFragment() {
 
                 override fun onError(error: FacebookException) {
                     toast("Login with Facebook fail: ${error.message}")
-                    Log.d("Login", "${error.message}")
                 }
             })
     }

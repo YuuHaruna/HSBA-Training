@@ -3,7 +3,7 @@
     android:shape="rectangle">
 
     <corners
-        android:radius="15dp"/>
+        android:radius="@dimen/radius_chat_voiceChat_wave"/>
     <solid android:color="@color/white"/>
 
 </shape>

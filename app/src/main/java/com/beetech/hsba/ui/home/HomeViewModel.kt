@@ -36,7 +36,6 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Ba
                     _loginStateFlow.value = response
                 },
                     { t ->
-                        Log.e("LoginResponse", t.toString())
                         _loginStateFlow.value = BaseObjectResponse<LoginResponse>().error(t)
                     })
         )

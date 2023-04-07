@@ -36,19 +36,19 @@
             android:layout_height="?attr/actionBarSize"
             android:background="#DB5BC1D0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/imageButton_chat_navBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:background="@null"
             android:paddingHorizontal="12dp"
-            android:layout_marginStart="12dp"
             android:src="@drawable/ic_nav_back"
+            app:layout_constraintBottom_toBottomOf="@id/imageView_chat_avatar"
             app:layout_constraintStart_toStartOf="@id/toolBar_chatFragment"
-            app:layout_constraintTop_toTopOf="@id/imageView_chat_avatar"
-            app:layout_constraintBottom_toBottomOf="@id/imageView_chat_avatar"/>
+            app:layout_constraintTop_toTopOf="@id/imageView_chat_avatar" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imageView_chat_avatar"
@@ -56,9 +56,9 @@
             android:layout_height="35dp"
             android:layout_marginBottom="6dp"
             android:src="@drawable/avatar"
-            app:shapeAppearanceOverlay="@style/RoundedImageViewAvatar"
+            app:layout_constraintBottom_toBottomOf="@id/toolBar_chatFragment"
             app:layout_constraintStart_toEndOf="@id/imageButton_chat_navBack"
-            app:layout_constraintBottom_toBottomOf="@id/toolBar_chatFragment"/>
+            app:shapeAppearanceOverlay="@style/RoundedImageViewAvatar" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/textView_chat_name"
@@ -70,22 +70,22 @@
             android:textColor="@color/white"
             android:textSize="17sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toEndOf="@id/imageView_chat_avatar"
+            app:layout_constraintBottom_toBottomOf="@id/imageView_chat_avatar"
             app:layout_constraintEnd_toStartOf="@id/imageButton_chat_voiceCall"
-            app:layout_constraintTop_toTopOf="@id/imageView_chat_avatar"
-            app:layout_constraintBottom_toBottomOf="@id/imageView_chat_avatar"/>
+            app:layout_constraintStart_toEndOf="@id/imageView_chat_avatar"
+            app:layout_constraintTop_toTopOf="@id/imageView_chat_avatar" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/imageButton_chat_videoCall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
             android:background="@null"
             android:paddingHorizontal="8dp"
-            android:layout_marginEnd="16dp"
             android:src="@drawable/ic_video_call"
+            app:layout_constraintBottom_toBottomOf="@id/imageView_chat_avatar"
             app:layout_constraintEnd_toEndOf="@id/toolBar_chatFragment"
-            app:layout_constraintTop_toTopOf="@id/imageView_chat_avatar"
-            app:layout_constraintBottom_toBottomOf="@id/imageView_chat_avatar"/>
+            app:layout_constraintTop_toTopOf="@id/imageView_chat_avatar" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/imageButton_chat_voiceCall"
@@ -94,9 +94,9 @@
             android:background="@null"
             android:paddingHorizontal="7dp"
             android:src="@drawable/ic_voice_call"
+            app:layout_constraintBottom_toBottomOf="@id/imageView_chat_avatar"
             app:layout_constraintEnd_toStartOf="@id/imageButton_chat_videoCall"
-            app:layout_constraintTop_toTopOf="@id/imageView_chat_avatar"
-            app:layout_constraintBottom_toBottomOf="@id/imageView_chat_avatar"/>
+            app:layout_constraintTop_toTopOf="@id/imageView_chat_avatar" />
 
 
         <View
@@ -111,8 +111,8 @@
             layout="@layout/layout_chat_textchatbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:viewModel="@{viewModel}"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:viewModel="@{viewModel}" />
 
         <View
             android:id="@+id/view_shadow_voiceChatBox"
@@ -126,8 +126,8 @@
             android:id="@+id/view_chat_voiceChatBox"
             android:layout_width="match_parent"
             android:layout_height="76dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:background="@drawable/background_chat_chatview" />
+            android:background="@drawable/background_chat_chatview"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/imageButton_chat_cancelVoiceChat"
@@ -167,9 +167,9 @@
             android:id="@+id/view_chat_voiceChatBox_voiceAnimation"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="7.5dp"
             android:layout_marginVertical="18.5dp"
-            android:background="@drawable/background_chat_chatbox_voiceanimation"
+            android:layout_marginStart="7.5dp"
+            android:background="@drawable/shape_chat_chatbox_voiceanimation"
             app:layout_constraintBottom_toBottomOf="@id/view_chat_voiceChatBox"
             app:layout_constraintEnd_toStartOf="@id/imageButton_chat_sendVoiceChat"
             app:layout_constraintStart_toEndOf="@id/imageButton_chat_resetVoiceChat"
@@ -197,12 +197,12 @@
             app:layout_constraintEnd_toEndOf="@id/view_chat_voiceChatBox_voiceAnimation"
             app:layout_constraintTop_toTopOf="@id/view_chat_voiceChatBox_voiceAnimation" />
 
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/group_chat_voiceChatBox"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:constraint_referenced_ids="view_shadow_voiceChatBox, recyclerView_chat_waveAnimation, textView_chat_voiceChat_time, view_chat_voiceChatBox_voiceAnimation, imageButton_chat_sendVoiceChat, imageButton_chat_resetVoiceChat, imageButton_chat_cancelVoiceChat, view_chat_voiceChatBox" />
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_chat_voiceChatBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="view_shadow_voiceChatBox, recyclerView_chat_waveAnimation, textView_chat_voiceChat_time, view_chat_voiceChatBox_voiceAnimation, imageButton_chat_sendVoiceChat, imageButton_chat_resetVoiceChat, imageButton_chat_cancelVoiceChat, view_chat_voiceChatBox" />
 
         <!--        <androidx.coordinatorlayout.widget.CoordinatorLayout-->
 <!--            android:id="@+id/parentView_chat_bottomSheetGallery"-->

@@ -59,6 +59,8 @@
     <dimen name="circle_stroke_width">2dp</dimen>
     <dimen name="normal_text_size">14dp</dimen>
 
+<!--    Auth Login-->
+
     <dimen name="textSize_login_editText">16sp</dimen>
     <dimen name="textSize_login_loginButton">16sp</dimen>
     <dimen name="textSize_login_ssoTitle">16sp</dimen>
@@ -96,5 +98,13 @@
     <dimen name="radius_login_edittext">22.5dp</dimen>
     <dimen name="radius_login_drawableStartEdittext">23dp</dimen>
     <dimen name="radius_itemSSO">8dp</dimen>
+
+<!--    Chat-->
+    <dimen name="width_itemWaveVoiceChat">3dp</dimen>
+
+    <dimen name="padding_itemWaveVoiceChat">5dp</dimen>
+
+    <dimen name="radius_chat_voiceChat_voiceAnimationBox">19dp</dimen>
+    <dimen name="radius_chat_voiceChat_wave">15dp</dimen>
 
 </resources>

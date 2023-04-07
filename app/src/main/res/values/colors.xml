@@ -6,6 +6,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey_background">#F2F2F2</color>
+
+<!--    Auth Login-->
     <color name="authButton_disable_startColor">#4D42A3B3</color>
     <color name="authButton_disable_endColor">#4D5CC2D1</color>
     <color name="authButton_enable_startColor">#42A3B3</color>
@@ -14,4 +16,7 @@
     <color name="login_drawableStartEdittext_startColor">#F0C32D</color>
     <color name="login_drawableStartEdittext_endColor">#F2B117</color>
     <color name="login_itemSSO">#D6D6D6</color>
+
+<!--    Chat-->
+    <color name="chat_voiceChat_voiceAnimationBox">#5BC1D0</color>
 </resources>

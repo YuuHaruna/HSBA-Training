@@ -2,13 +2,13 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:padding="5dp">
+    android:padding="@dimen/padding_itemWaveVoiceChat">
 
     <View
         android:id="@+id/view_itemWaveVoiceChat_wave"
-        android:layout_width="3dp"
+        android:layout_width="@dimen/width_itemWaveVoiceChat"
         android:layout_height="2dp"
         android:layout_gravity="center"
-        android:background="@drawable/background_chat_voicechat_wave"/>
+        android:background="@drawable/shape_chat_voicechat_wave"/>
 
 </FrameLayout>

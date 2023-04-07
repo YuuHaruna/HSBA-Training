@@ -2,14 +2,17 @@ package com.beetech.hsba.ui.chat
 
 import android.Manifest
 import android.animation.ValueAnimator
+import android.bluetooth.BluetoothDevice
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.icu.text.SimpleDateFormat
+import android.media.AudioFormat
+import android.media.AudioManager
 import android.media.AudioRecord
 import android.media.MediaRecorder
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
+import android.os.*
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -18,8 +21,9 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.os.postDelayed
-import androidx.core.view.*
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -80,6 +84,26 @@ class ChatFragment : BaseFragment() {
 
     override fun initData() {
         binding.viewModel = viewModel
+
+        val bluetoothReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context,
+                intent: Intent
+            ) {
+                val action = intent.action
+                if (BluetoothDevice.ACTION_ACL_CONNECTED == action) {
+                    toast("Đã kết nối vào răng xanh")
+                } else if (BluetoothDevice.ACTION_ACL_DISCONNECTED == action) {
+                    toast("Đã ngắt kết nối tới răng xanh")
+                }
+            }
+        }
+
+        val filter = IntentFilter()
+        filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED)
+        filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
+        requireContext().registerReceiver(bluetoothReceiver, filter)
     }
 
     override fun initListener() {
@@ -252,6 +276,45 @@ class ChatFragment : BaseFragment() {
 //        openCameraForResult.launch(cameraIntent)
 //    }
 
+    private fun setupBottomSheetGallery(headerHeight: Int) {
+        bottomSheetGalleryBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+        val bottomSheetBinding = binding.bottomSheetGalleryImage
+
+        bottomSheetGalleryBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) { }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                val slideOff = if (slideOffset < 0) 0f else slideOffset
+
+                val paramHeader = binding.bottomSheetGalleryImage.viewBottomSheetImageGalleryExpanseHeader.layoutParams
+                paramHeader.height = (headerHeight * slideOff).toInt().inc()
+                binding.bottomSheetGalleryImage.viewBottomSheetImageGalleryExpanseHeader.layoutParams = paramHeader
+
+                val paramIndicator = binding.bottomSheetGalleryImage.viewBottomSheetImageGalleryIndicator.layoutParams
+                paramIndicator.height = (20.dpToPx(requireContext()) * (1 - slideOff)).toInt().inc()
+                binding.bottomSheetGalleryImage.viewBottomSheetImageGalleryIndicator.layoutParams = paramIndicator
+
+                if (slideOff == 1f) {
+                    binding.bottomSheetGalleryImage.viewBottomSheetImageGalleryIndicator.visibility = View.GONE
+                    binding.bottomSheetGalleryImage.groupBottomSheetImageGalleryExpanseSendBox.visibility = View.VISIBLE
+                    if (viewModel.selectedGalleryImage.value.isNullOrEmpty())
+                        binding.bottomSheetGalleryImage.textViewBottomSheetImageGalleryImageCount.visibility = View.GONE
+                } else {
+                    binding.bottomSheetGalleryImage.viewBottomSheetImageGalleryIndicator.visibility = View.VISIBLE
+                    binding.bottomSheetGalleryImage.groupBottomSheetImageGalleryExpanseSendBox.visibility = View.GONE
+                }
+
+                if (slideOff == 0f) binding.bottomSheetGalleryImage.groupBottomSheetImageGalleryHeader.visibility = View.GONE
+                else binding.bottomSheetGalleryImage.groupBottomSheetImageGalleryHeader.visibility = View.VISIBLE
+            }
+        })
+
+        bottomSheetGalleryBehavior.peekHeight = requireContext().resources.displayMetrics.heightPixels * 2 / 5
+
+        bottomSheetBinding.viewModel = viewModel
+
 //    private fun setupBottomSheetGallery(headerHeight: Int) {
 //        bottomSheetGalleryBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 //
@@ -381,7 +444,7 @@ class ChatFragment : BaseFragment() {
     private fun startVoiceChat(file: String){
         mediaRecorder = MediaRecorder()
         mediaRecorder?.apply {
-            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setOutputFile(file)
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
