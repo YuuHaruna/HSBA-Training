@@ -11,17 +11,14 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.beetech.hsba.R
-import com.beetech.hsba.databinding.ItemMesssageReceiveBinding
-import com.beetech.hsba.databinding.ItemMesssageSendBinding
-import com.beetech.hsba.databinding.ItemVoiceMesssageSendBinding
-import com.beetech.hsba.entity.BaseMessage
-import com.beetech.hsba.entity.Message
-import com.beetech.hsba.entity.MessageType
-import com.beetech.hsba.entity.VoiceMessage
+import com.beetech.hsba.base.custom.MarginItemDecorationGridLayout
+import com.beetech.hsba.databinding.*
+import com.beetech.hsba.entity.*
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ChatListAdapter(val avatarUrl: String = "") :
-    ListAdapter<BaseMessage, ChatListViewHolder>(ChatListDiffUtil()) {
+    ListAdapter<BaseMessage, ChatListAdapter.ChatListViewHolder>(ChatListDiffUtil()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatListViewHolder {
         return when (viewType) {
@@ -51,14 +48,24 @@ class ChatListAdapter(val avatarUrl: String = "") :
                     R.layout.item_voice_messsage_send
                 )
             )
-//            MessageType.SendImg.ordinal -> ImageMessageSendListViewHolder(ChatListViewHolder.from(parent, R.layout.item_image_messsage_send))
-//            MessageType.ReceiveImg.ordinal -> ImageMessageReceiveListViewHolder(ChatListViewHolder.from(parent, R.layout.item_image_messsage_receive))
-//            MessageType.SendMultiImg.ordinal -> MultiImageMessageSendListViewHolder(
-//                ChatListViewHolder.from(parent, R.layout.item_multi_image_messsage_send)
-//            )
-//            MessageType.ReceiveMultiImg.ordinal -> MultiImageMessageReceiveListViewHolder(
-//                ChatListViewHolder.from(parent, R.layout.item_multi_image_messsage_receive)
-//            )
+            MessageType.SendImg.ordinal -> ImageMessageSendListViewHolder(
+                ChatListViewHolder.from(
+                    parent,
+                    R.layout.item_image_messsage_send
+                )
+            )
+            MessageType.ReceiveImg.ordinal -> ImageMessageReceiveListViewHolder(
+                ChatListViewHolder.from(
+                    parent,
+                    R.layout.item_image_messsage_receive
+                )
+            )
+            MessageType.SendMultiImg.ordinal -> MultiImageMessageSendListViewHolder(
+                ChatListViewHolder.from(parent, R.layout.item_multi_image_messsage_send)
+            )
+            MessageType.ReceiveMultiImg.ordinal -> MultiImageMessageReceiveListViewHolder(
+                ChatListViewHolder.from(parent, R.layout.item_multi_image_messsage_receive)
+            )
             else -> MessageReceiveListViewHolder(
                 ChatListViewHolder.from(
                     parent,
@@ -83,21 +90,21 @@ class ChatListAdapter(val avatarUrl: String = "") :
                 holder.bind(item as VoiceMessage)
             }
 
-//            is ImageMessageSendListViewHolder -> {
-//                holder.bind(item as ImageMessage)
-//            }
-//
-//            is ImageMessageReceiveListViewHolder -> {
-//                holder.bind(item as ImageMessage, avatarUrl)
-//            }
-//
-//            is MultiImageMessageSendListViewHolder -> {
-//                holder.bind(item as ImageMessage)
-//            }
-//
-//            is MultiImageMessageReceiveListViewHolder -> {
-//                holder.bind(item as ImageMessage, avatarUrl)
-//            }
+            is ImageMessageSendListViewHolder -> {
+                holder.bind(item as ImageMessage)
+            }
+
+            is ImageMessageReceiveListViewHolder -> {
+                holder.bind(item as ImageMessage, avatarUrl)
+            }
+
+            is MultiImageMessageSendListViewHolder -> {
+                holder.bind(item as ImageMessage)
+            }
+
+            is MultiImageMessageReceiveListViewHolder -> {
+                holder.bind(item as ImageMessage, avatarUrl)
+            }
         }
     }
 
@@ -170,7 +177,9 @@ class ChatListAdapter(val avatarUrl: String = "") :
                     if (wasPlaying) mediaPlayer.apply {
                         start()
                         runSeeker(mediaPlayer)
-                        binding.imageViewItemVoiceMessageSendPlayPause.setImageDrawable(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_pause))
+                        binding.imageViewItemVoiceMessageSendPlayPause.setImageDrawable(
+                            ContextCompat.getDrawable(binding.root.context, R.drawable.ic_pause)
+                        )
                     }
                     else runVoice(mediaPlayer)
                 }
@@ -182,13 +191,17 @@ class ChatListAdapter(val avatarUrl: String = "") :
                     seekBar: SeekBar?,
                     progress: Int,
                     fromUser: Boolean
-                ) {}
+                ) {
+                }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {}
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {
                     if (wasPlaying) {
                         mediaPlayer.seekTo(seekBar?.progress ?: 0)
-                        binding.textViewItemVoiceMessageSendTime.text = SimpleDateFormat("mm:ss").format(seekBar?.max?.minus((seekBar.progress)) ?: 0)
+                        binding.textViewItemVoiceMessageSendTime.text =
+                            SimpleDateFormat("mm:ss").format(
+                                seekBar?.max?.minus((seekBar.progress)) ?: 0
+                            )
                     }
                 }
             })
@@ -200,7 +213,12 @@ class ChatListAdapter(val avatarUrl: String = "") :
                 mediaPlayer.start()
                 wasPlaying = true
                 runSeeker(mediaPlayer)
-                binding.imageViewItemVoiceMessageSendPlayPause.setImageDrawable(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_pause))
+                binding.imageViewItemVoiceMessageSendPlayPause.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        binding.root.context,
+                        R.drawable.ic_pause
+                    )
+                )
             } catch (e: Exception) {
                 Log.e("PlayVoiceChat", "Error occurred!: $e")
                 mediaPlayer.stop()
@@ -211,24 +229,32 @@ class ChatListAdapter(val avatarUrl: String = "") :
         private fun runSeeker(mediaPlayer: MediaPlayer) {
             CoroutineScope(Dispatchers.IO).launch {
                 binding.seekBarItemVoiceMessageSendProgress.progress = 0
-                var currentPosition = if (mediaPlayer.currentPosition >= 0) mediaPlayer.currentPosition else 0
+                var currentPosition =
+                    if (mediaPlayer.currentPosition >= 0) mediaPlayer.currentPosition else 0
                 val total = mediaPlayer.duration
                 while (wasPlaying && mediaPlayer.isPlaying && currentPosition <= total) {
                     currentPosition = mediaPlayer.currentPosition
                     withContext(Dispatchers.Main) {
                         binding.seekBarItemVoiceMessageSendProgress.progress = currentPosition
-                        binding.textViewItemVoiceMessageSendTime.text = SimpleDateFormat("mm:ss").format(total - currentPosition)
+                        binding.textViewItemVoiceMessageSendTime.text =
+                            SimpleDateFormat("mm:ss").format(total - currentPosition)
                     }
                 }
 
                 withContext(Dispatchers.Main) {
-                    binding.imageViewItemVoiceMessageSendPlayPause.setImageDrawable(ContextCompat.getDrawable(binding.root.context, R.drawable.ic_play))
+                    binding.imageViewItemVoiceMessageSendPlayPause.setImageDrawable(
+                        ContextCompat.getDrawable(
+                            binding.root.context,
+                            R.drawable.ic_play
+                        )
+                    )
                 }
 
                 if (currentPosition / 100 == total / 100) {
                     withContext(Dispatchers.Main) {
                         binding.seekBarItemVoiceMessageSendProgress.progress = 0
-                        binding.textViewItemVoiceMessageSendTime.text = SimpleDateFormat("mm:ss").format(total)
+                        binding.textViewItemVoiceMessageSendTime.text =
+                            SimpleDateFormat("mm:ss").format(total)
                     }
                     mediaPlayer.stop()
                     mediaPlayer.reset()
@@ -238,121 +264,122 @@ class ChatListAdapter(val avatarUrl: String = "") :
         }
     }
 
-//    class ImageMessageSendListViewHolder (private val binding: ItemImageMesssageSendBinding) :
-//        ChatListViewHolder(binding) {
-//        fun bind(item: ImageMessage) {
-//            binding.imageViewItemImageMessageSendImage.apply {
-//                Glide
-//                    .with(this.context)
-//                    .load(item.image[0])
-//                    .into(this)
-//            }
-//            binding.executePendingBindings()
-//        }
-//    }
-
-//    class ImageMessageReceiveListViewHolder (private val binding: ItemImageMesssageReceiveBinding) :
-//        ChatListViewHolder(binding) {
-//        fun bind(item: ImageMessage, avatarUrl: String) {
-//            binding.imageViewItemImageMessageReceiveImage.apply {
-//                Glide
-//                    .with(this.context)
-//                    .load(item.image[0])
-//                    .centerCrop()
-//                    .into(this)
-//            }
-//
-//
-//            binding.imageViewItemImageMessageReceiveAvatar.apply {
-//                Glide
-//                    .with(this.context)
-//                    .load(avatarUrl)
-//                    .centerCrop()
-//                    .placeholder(R.drawable.avatar)
-//                    .into(this)
-//            }
-//            binding.executePendingBindings()
-//        }
-//    }
-
-//    class MultiImageMessageSendListViewHolder (private val binding: ItemMultiImageMesssageSendBinding) :
-//        ChatListViewHolder(binding) {
-//        fun bind(item: ImageMessage) {
-//            binding.recyclerViewMultiImageMessageSend.apply {
-//                adapter = ChatImageListAdapter()
-//                if (item.image.size == 2) {
-//                    layoutManager = GridLayoutManager(this.context, 2)
-//                    addItemDecoration(
-//                        MarginItemDecorationGridLayout(
-//                            2 * this.context.resources.displayMetrics.density.toInt(),
-//                            2
-//                        )
-//                    )
-//                } else {
-//                    layoutManager = GridLayoutManager(this.context, 3)
-//                    addItemDecoration(
-//                        MarginItemDecorationGridLayout(
-//                            2 * this.context.resources.displayMetrics.density.toInt(),
-//                            3
-//                        )
-//                    )
-//                }
-//                (adapter as? ListAdapter<String, *>)?.submitList(item.image)
-//            }
-//            binding.executePendingBindings()
-//        }
-//    }
-
-//    class MultiImageMessageReceiveListViewHolder (private val binding: ItemMultiImageMesssageReceiveBinding) :
-//        ChatListViewHolder(binding) {
-//        fun bind(item: ImageMessage, avatarUrl: String) {
-//            binding.recyclerViewMultiImageMessageReceive.apply {
-//                adapter = ChatImageListAdapter()
-//                if (item.image.size == 2) {
-//                    layoutManager = GridLayoutManager(this.context, 2)
-//                    addItemDecoration(
-//                        MarginItemDecorationGridLayout(
-//                            2 * this.context.resources.displayMetrics.density.toInt(),
-//                            2
-//                        )
-//                    )
-//                } else {
-//                    layoutManager = GridLayoutManager(this.context, 3)
-//                    addItemDecoration(
-//                        MarginItemDecorationGridLayout(
-//                            2 * this.context.resources.displayMetrics.density.toInt(),
-//                            3
-//                        )
-//                    )
-//                }
-//                (adapter as? ListAdapter<String, *>)?.submitList(item.image)
-//            }
-//
-//            binding.imageViewItemMultiImageMessageReceiveAvatar.apply {
-//                Glide
-//                    .with(this.context)
-//                    .load(avatarUrl)
-//                    .centerCrop()
-//                    .placeholder(R.drawable.avatar)
-//                    .into(this)
-//            }
-//            binding.executePendingBindings()
-//        }
-}
-
-sealed class ChatListViewHolder(binding: ViewBinding) : RecyclerView.ViewHolder(binding.root) {
-    companion object {
-        inline fun <reified DB : ViewDataBinding> from(parent: ViewGroup, layoutId: Int): DB {
-            val layoutInflater = LayoutInflater.from(parent.context)
-            return DataBindingUtil.inflate(layoutInflater, layoutId, parent, false) as DB
+    class ImageMessageSendListViewHolder(private val binding: ItemImageMesssageSendBinding) :
+        ChatListViewHolder(binding) {
+        fun bind(item: ImageMessage) {
+            binding.imageViewItemImageMessageSendImage.apply {
+                Glide
+                    .with(this.context)
+                    .load(item.image[0])
+                    .into(this)
+            }
+            binding.executePendingBindings()
         }
     }
-}
 
-class ChatListDiffUtil : DiffUtil.ItemCallback<BaseMessage>() {
-    override fun areContentsTheSame(oldItem: BaseMessage, newItem: BaseMessage) =
-        oldItem == newItem
+    class ImageMessageReceiveListViewHolder(private val binding: ItemImageMesssageReceiveBinding) :
+        ChatListViewHolder(binding) {
+        fun bind(item: ImageMessage, avatarUrl: String) {
+            binding.imageViewItemImageMessageReceiveImage.apply {
+                Glide
+                    .with(this.context)
+                    .load(item.image[0])
+                    .centerCrop()
+                    .into(this)
+            }
 
-    override fun areItemsTheSame(oldItem: BaseMessage, newItem: BaseMessage) =
-        oldItem.hashCode() == newItem.hashCode()
+
+            binding.imageViewItemImageMessageReceiveAvatar.apply {
+                Glide
+                    .with(this.context)
+                    .load(avatarUrl)
+                    .centerCrop()
+                    .placeholder(R.drawable.avatar)
+                    .into(this)
+            }
+            binding.executePendingBindings()
+        }
+    }
+
+    class MultiImageMessageSendListViewHolder(private val binding: ItemMultiImageMesssageSendBinding) :
+        ChatListViewHolder(binding) {
+        fun bind(item: ImageMessage) {
+            binding.recyclerViewMultiImageMessageSend.apply {
+                adapter = ChatImageListAdapter()
+                if (item.image.size == 2) {
+                    layoutManager = GridLayoutManager(this.context, 2)
+                    addItemDecoration(
+                        MarginItemDecorationGridLayout(
+                            2 * this.context.resources.displayMetrics.density.toInt(),
+                            2
+                        )
+                    )
+                } else {
+                    layoutManager = GridLayoutManager(this.context, 3)
+                    addItemDecoration(
+                        MarginItemDecorationGridLayout(
+                            2 * this.context.resources.displayMetrics.density.toInt(),
+                            3
+                        )
+                    )
+                }
+                (adapter as? ListAdapter<String, *>)?.submitList(item.image)
+            }
+            binding.executePendingBindings()
+        }
+    }
+
+    class MultiImageMessageReceiveListViewHolder(private val binding: ItemMultiImageMesssageReceiveBinding) :
+        ChatListViewHolder(binding) {
+        fun bind(item: ImageMessage, avatarUrl: String) {
+            binding.recyclerViewMultiImageMessageReceive.apply {
+                adapter = ChatImageListAdapter()
+                if (item.image.size == 2) {
+                    layoutManager = GridLayoutManager(this.context, 2)
+                    addItemDecoration(
+                        MarginItemDecorationGridLayout(
+                            2 * this.context.resources.displayMetrics.density.toInt(),
+                            2
+                        )
+                    )
+                } else {
+                    layoutManager = GridLayoutManager(this.context, 3)
+                    addItemDecoration(
+                        MarginItemDecorationGridLayout(
+                            2 * this.context.resources.displayMetrics.density.toInt(),
+                            3
+                        )
+                    )
+                }
+                (adapter as? ListAdapter<String, *>)?.submitList(item.image)
+            }
+
+            binding.imageViewItemMultiImageMessageReceiveAvatar.apply {
+                Glide
+                    .with(this.context)
+                    .load(avatarUrl)
+                    .centerCrop()
+                    .placeholder(R.drawable.avatar)
+                    .into(this)
+            }
+            binding.executePendingBindings()
+        }
+    }
+
+    sealed class ChatListViewHolder(binding: ViewBinding) : RecyclerView.ViewHolder(binding.root) {
+        companion object {
+            inline fun <reified DB : ViewDataBinding> from(parent: ViewGroup, layoutId: Int): DB {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                return DataBindingUtil.inflate(layoutInflater, layoutId, parent, false) as DB
+            }
+        }
+    }
+
+    class ChatListDiffUtil : DiffUtil.ItemCallback<BaseMessage>() {
+        override fun areContentsTheSame(oldItem: BaseMessage, newItem: BaseMessage) =
+            oldItem == newItem
+
+        override fun areItemsTheSame(oldItem: BaseMessage, newItem: BaseMessage) =
+            oldItem.hashCode() == newItem.hashCode()
+    }
 }

@@ -12,9 +12,9 @@ fun messageChat(recyclerView: RecyclerView?, listMessage: List<BaseMessage>?) {
     }
 }
 
-//@BindingAdapter("app:galleryImage")
-//fun galleryImage(recyclerView: RecyclerView?, galleryImageUIModel: List<GalleryImageUIModel>?){
-//    if (recyclerView?.adapter != null && galleryImageUIModel != null) {
-//        (recyclerView.adapter as? ListAdapter<GalleryImageUIModel, *>)?.submitList(galleryImageUIModel)
-//    }
-//}
+@BindingAdapter("app:galleryImage")
+fun galleryImage(recyclerView: RecyclerView?, galleryImageUIModel: List<GalleryImageUIModel>?){
+    if (recyclerView?.adapter != null && galleryImageUIModel != null) {
+        (recyclerView.adapter as? ListAdapter<GalleryImageUIModel, *>)?.submitList(galleryImageUIModel)
+    }
+}

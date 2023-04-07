@@ -12,8 +12,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="10dp"
-        android:background="@drawable/background_chat_chatview">
+        android:background="@drawable/background_chat_chatview"
+        android:paddingVertical="10dp">
 
         <!--        <androidx.appcompat.widget.AppCompatImageButton-->
         <!--            android:id="@+id/imageButton_chat_collapseChatBox"-->
@@ -26,18 +26,18 @@
         <!--            app:layout_constraintStart_toStartOf="@id/view_chat_typeMessage"-->
         <!--            app:layout_constraintTop_toTopOf="@id/view_chat_typeMessage" />-->
 
-        <!--            <androidx.appcompat.widget.AppCompatImageButton-->
-        <!--                android:id="@+id/imageButton_chat_collapseGalleryBottomSheet"-->
-        <!--                android:layout_width="wrap_content"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:paddingVertical="10dp"-->
-        <!--                android:paddingHorizontal="7dp"-->
-        <!--                android:layout_marginStart="8dp"-->
-        <!--                android:background="@null"-->
-        <!--                android:src="@drawable/ic_collapse_bottomsheet_gallery"-->
-        <!--                android:visibility="gone"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                app:layout_constraintTop_toTopOf="parent"/>-->
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/imageButton_chat_collapseGalleryBottomSheet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@null"
+            android:paddingHorizontal="7dp"
+            android:paddingVertical="10dp"
+            android:src="@drawable/ic_collapse_bottomsheet_gallery"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/imageButton_chat_attachment"
@@ -45,8 +45,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:background="@null"
-            android:paddingVertical="10dp"
             android:paddingHorizontal="7dp"
+            android:paddingVertical="10dp"
             android:src="@drawable/ic_attachment"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -70,20 +70,20 @@
             android:paddingHorizontal="7dp"
             android:paddingVertical="10dp"
             android:src="@drawable/ic_gallery"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/imageButton_chat_takePhoto" />
+            app:layout_constraintStart_toEndOf="@id/imageButton_chat_takePhoto"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/imageButton_chat_voiceChat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/imageButton_chat_gallery"
             android:background="@null"
             android:paddingHorizontal="7dp"
             android:paddingVertical="10dp"
             android:src="@drawable/ic_voice_chat"
-            android:layout_toEndOf="@id/imageButton_chat_gallery"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/imageButton_chat_gallery" />
+            app:layout_constraintStart_toEndOf="@id/imageButton_chat_gallery"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/editText_chat"
@@ -99,9 +99,9 @@
             android:paddingVertical="8dp"
             android:text="@={viewModel.chatMessage}"
             android:textSize="12sp"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/imageButton_chat_send"
             app:layout_constraintStart_toEndOf="@id/imageButton_chat_voiceChat"
-            app:layout_constraintEnd_toStartOf="@id/imageButton_chat_send" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/imageButton_chat_send"

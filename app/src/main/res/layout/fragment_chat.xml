@@ -204,17 +204,17 @@
             android:visibility="gone"
             app:constraint_referenced_ids="view_shadow_voiceChatBox, recyclerView_chat_waveAnimation, textView_chat_voiceChat_time, view_chat_voiceChatBox_voiceAnimation, imageButton_chat_sendVoiceChat, imageButton_chat_resetVoiceChat, imageButton_chat_cancelVoiceChat, view_chat_voiceChatBox" />
 
-        <!--        <androidx.coordinatorlayout.widget.CoordinatorLayout-->
-<!--            android:id="@+id/parentView_chat_bottomSheetGallery"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent">-->
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/parentView_chat_bottomSheetGallery"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-<!--            <include-->
-<!--                android:id="@+id/bottomSheet_galleryImage"-->
-<!--                layout="@layout/bottom_sheet_gallery_image" />-->
-<!--        </androidx.coordinatorlayout.widget.CoordinatorLayout>-->
+            <include
+                android:id="@+id/bottomSheet_galleryImage"
+                layout="@layout/view_bottom_sheet_gallery_image" />
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

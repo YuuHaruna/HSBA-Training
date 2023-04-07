@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.beetech.hsba.ui.chat.ChatViewModel" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/parentView_bottomSheet_galleryImage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:behavior_hideable="true"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <View
+            android:id="@+id/view_bottomSheetImageGallery_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="@color/white"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <View
+            android:layout_width="110dp"
+            android:layout_height="3dp"
+            android:background="#5BC1D0"
+            app:layout_constraintEnd_toEndOf="@id/view_bottomSheetImageGallery_indicator"
+            app:layout_constraintStart_toStartOf="@id/view_bottomSheetImageGallery_indicator"
+            app:layout_constraintTop_toTopOf="@id/view_bottomSheetImageGallery_indicator"
+            app:layout_constraintBottom_toBottomOf="@id/view_bottomSheetImageGallery_indicator"/>
+
+        <View
+            android:id="@+id/view_bottomSheetImageGallery_expanseHeader"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#CC000000"
+            app:layout_constraintTop_toBottomOf="@id/view_bottomSheetImageGallery_indicator"
+            app:layout_constraintBottom_toTopOf="@id/recyclerView_galleryImage"/>
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/imageButton_bottomSheetImageGallery_expanseHeader_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/ic_close"
+            android:padding="17dp"
+            app:layout_constraintStart_toStartOf="@id/view_bottomSheetImageGallery_expanseHeader"
+            app:layout_constraintTop_toTopOf="@id/textView_bottomSheetImageGallery_expanseHeader_title"
+            app:layout_constraintBottom_toBottomOf="@id/textView_bottomSheetImageGallery_expanseHeader_title"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textView_bottomSheetImageGallery_expanseHeader_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hình Ảnh"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:layout_marginBottom="13dp"
+            app:layout_constraintStart_toStartOf="@id/view_bottomSheetImageGallery_expanseHeader"
+            app:layout_constraintEnd_toEndOf="@id/view_bottomSheetImageGallery_expanseHeader"
+            app:layout_constraintBottom_toBottomOf="@id/view_bottomSheetImageGallery_expanseHeader"/>
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_bottomSheetImageGallery_header"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="view_bottomSheetImageGallery_expanseHeader, imageButton_bottomSheetImageGallery_expanseHeader_close, textView_bottomSheetImageGallery_expanseHeader_title"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView_galleryImage"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:galleryImage="@{viewModel.listGalleryImageUIModel}"
+            android:paddingBottom="88dp"
+            android:clipToPadding="false"
+            android:background="@color/white"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constraintTop_toBottomOf="@id/view_bottomSheetImageGallery_expanseHeader"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_bottomSheetImageGallery_expanseSendBox"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:constraint_referenced_ids="view_bottomSheetImageGallery_expanseSendBox, textView_bottomSheetImageGallery_imageCount, imageButton_bottomSheetImageGallery_expanseSend"/>
+
+        <View
+            android:id="@+id/view_bottomSheetImageGallery_expanseSendBox"
+            android:layout_width="match_parent"
+            android:layout_height="88dp"
+            android:background="#AD000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/textView_bottomSheetImageGallery_imageCount"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginTop="-10dp"
+            android:background="@drawable/shape_bottomsheet_galleryimage_imagecount"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            app:layout_constraintStart_toEndOf="@id/imageButton_bottomSheetImageGallery_expanseSend"
+            app:layout_constraintTop_toTopOf="@id/imageButton_bottomSheetImageGallery_expanseSend" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/imageButton_bottomSheetImageGallery_expanseSend"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_send_gallery_image"
+            android:enabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/view_bottomSheetImageGallery_expanseSendBox"
+            app:layout_constraintBottom_toBottomOf="@id/view_bottomSheetImageGallery_expanseSendBox"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
