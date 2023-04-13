@@ -24,6 +24,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.setMargins
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -145,9 +146,18 @@ class ChatFragment : BaseFragment() {
     override fun initData() {
         binding.viewModel = viewModel
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            listOf(
+                Manifest.permission.POST_NOTIFICATIONS,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ).forEach {
+                requestPermissionLauncher.launch(it)
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requestPermissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+        }
 
-        val bluetoothConnectFilter = IntentFilter()
+            val bluetoothConnectFilter = IntentFilter()
         bluetoothConnectFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
         bluetoothConnectFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECT_REQUESTED)
         bluetoothConnectFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
@@ -176,6 +186,14 @@ class ChatFragment : BaseFragment() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        WindowInsetsControllerCompat(requireActivity().window, requireActivity().window.decorView.rootView).let {
+            it.hide(WindowInsetsCompat.Type.systemBars())
+            it.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -186,9 +204,9 @@ class ChatFragment : BaseFragment() {
                 ActivityResultContracts.RequestPermission()
             ) { isGranted: Boolean ->
                 if (isGranted) {
-                    checkPermission {
-
-                    }
+//                    checkPermission {
+//
+//                    }
                 }
             }
 
@@ -291,6 +309,10 @@ class ChatFragment : BaseFragment() {
         binding.layoutChatTextChatBox.imageButtonChatCollapseGalleryBottomSheet.setOnClickListener {
             hideBottomSheetGallery()
         }
+
+        binding.layoutChatTextChatBox.imageButtonChatAttachment.setOnClickListener {
+            requireContext().startForegroundService(Intent(requireContext(), UploadFileService::class.java))
+        }
     }
 
     private fun takePhoto() {
@@ -363,7 +385,7 @@ class ChatFragment : BaseFragment() {
             }
         }
 
-        viewModel.initListGalleryImageUIModel(getAllGalleryImage())
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){ viewModel.initListGalleryImageUIModel(getAllGalleryImage()) }
     }
 
     private fun hideBottomSheetGallery() {
